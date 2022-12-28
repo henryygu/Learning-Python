@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description="Just an example",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("-e", "--extensions", default=[],nargs='+',help="type in extensions to filter in format py Default filters everything")
 parser.add_argument("-l", "--directory", default="current",help="directory to run in")
+parser.add_argument("-d", "--datetime", default="yes",help="sort with datetime?")
 args = parser.parse_args()
 config = vars(args)
 #print(config)
@@ -36,20 +37,34 @@ else:
         split_types = ['.'+item for item in split_types]
 
 
-for file in os.listdir(os.curdir):
-    if file.endswith(split_types):
-        if os.path.isfile(file):
-            file_time = dt.datetime.fromtimestamp(os.path.getmtime(file))
-            print(file)
-            print(file_time.strftime("%Y-%m-%d"))
-            filename, file_ext = os.path.splitext(file)
-            file_ext_name = file_ext.replace(".","")
-            print(filename,file_ext,file_ext_name)
-            if not os.path.exists(str(file_time.strftime("%Y-%m-%d"))):
-                os.mkdir(str(file_time.strftime("%Y-%m-%d")))
-                if not os.path.exists(str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name):
-                    os.mkdir(str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name)
-            shutil.move(file, str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name)
+if config["datetime"] =="yes":
+    for file in os.listdir(os.curdir):
+        if file.endswith(tuple(split_types)):
+            if os.path.isfile(file):
+                file_time = dt.datetime.fromtimestamp(os.path.getmtime(file))
+                print(file)
+                print(file_time.strftime("%Y-%m-%d"))
+                filename, file_ext = os.path.splitext(file)
+                file_ext_name = file_ext.replace(".","")
+                print(filename,file_ext,file_ext_name)
+                if not os.path.exists(str(file_time.strftime("%Y-%m-%d"))):
+                    os.mkdir(str(file_time.strftime("%Y-%m-%d")))
+                    if not os.path.exists(str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name):
+                        os.mkdir(str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name)
+                shutil.move(file, str(file_time.strftime("%Y-%m-%d"))+'/'+file_ext_name)
+            else:
+                for file in os.listdir(os.curdir):
+                    if file.endswith(tuple(split_types)):
+                        if os.path.isfile(file):
+                            print(file)
+                            filename, file_ext = os.path.splitext(file)
+                            file_ext_name = file_ext.replace(".","")
+                            print(filename,file_ext,file_ext_name)
+                            if not os.path.exists(file_ext_name):
+                                os.mkdir(file_ext_name)
+                            shutil.move(file,file_ext_name)
+
+
 
 
 
