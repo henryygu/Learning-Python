@@ -4,7 +4,7 @@ import time
 
 numMin = 3
 
-whiel(True):
+while(True):
     x = 0
     while(x < numMin):
         time.sleep(60)
