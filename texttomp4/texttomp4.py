@@ -6,6 +6,11 @@ from moviepy.editor import *
 import cv2
 import numpy as np
 import soundfile as sf
+from io import BytesIO
+
+def remove_spaces(sentence):
+    return sentence.strip() != ""
+
 
 os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\texttomp4') 
 folder = "Files"
@@ -20,13 +25,14 @@ for filename in os.listdir(folder):
         # Split the text into sentences based on new line or full stops
         sentences = re.split(r'[.\n]', text)
         sentences = list(filter(None, sentences))
+        sentences = list(filter(remove_spaces, sentences))
         # Create a list to store the audio and video files
         audio_files = []
         video_files = []
         
         # Convert each sentence into a text to speech mp3 file and video file
         for i, sentence in enumerate(sentences):
-            print(i)
+            print(f'{i} out of {len(sentences)}]' )
             if len(sentence)!=0:
                 print("y")
                 # Convert the sentence into an mp3 file using gTTS
@@ -81,3 +87,4 @@ for filename in os.listdir(folder):
                 os.remove(f"sentence_{i}.mp4")
             except:
                 print(i)
+
