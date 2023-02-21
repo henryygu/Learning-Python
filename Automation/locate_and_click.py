@@ -10,9 +10,9 @@ os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation')
 
 # list of image filenames to search for
 #image_filenames = ["target.png", "target2.png", "target3.png"]
-image_filenames = ["target.png","target1.png"]
-harvest_filenames = ["harvestall.png","harvestall2.png"]
-plant_filenames = ["plantall.png","plantall2.png"]
+TARGET_FILENAMES = ["target.png","target1.png"]
+HARVEST_FILENAMES = ["harvestall.png","harvestall2.png"]
+PLANT_FILENAMES = ["plantall.png","plantall2.png"]
 
 
 def find_targets(image_filenames, confidence=0.8):
@@ -36,41 +36,26 @@ def click_targets(locations):
         center = pg.center(location)
         pg.click(center)
 
-# locations = find_targets(image_filenames)
-# harvest_locations = find_targets(harvest_filenames)
-# plant_locations = find_targets(plant_filenames)
 
-# click_targets(locations)
-
-
-
-
-
-while True:
+def search_for_targets():
+    """
+    Searches for the target images and performs the corresponding actions
+    if they are found.
+    """
+    # Search for each target image and perform the corresponding action if found
     x, y = pg.position()
-
-    # Take a screenshot of the desktop
-    # screenshot = pg.screenshot()
-
-    #adjust colours
-    # screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-    harvest_locations = find_targets(harvest_filenames)
-    plant_locations = find_targets(plant_filenames)
-
-    # search for each image and print its location if found
-    for filename in image_filenames:
-        target = pg.locateOnScreen(filename, confidence=0.8)
-        if target is not None:
-            print(f"Found {filename} at {target}")
-            print(target)
-           
-           
-            click_targets(harvest_locations)
+    for target_filename in TARGET_FILENAMES:
+        target_location = pg.locateOnScreen(target_filename, confidence=0.9)
+        if target_location is not None:
+            print(f"Found {target_filename} at {target_location}")
+            click_targets(find_targets(HARVEST_FILENAMES))
             pg.moveTo(x,y)
-            time.sleep(random.randint(5, 10))
-            click_targets(plant_locations)
+            time.sleep(random.uniform(5, 10))
+            click_targets(find_targets(PLANT_FILENAMES))
             pg.moveTo(x,y)
         else:
-            print(f"Did not find {filename}")
-    
-    time.sleep(random.randint(10, 40)) # Wait for a second before checking again
+            print(f"Did not find {target_filename}")
+
+while True:
+    search_for_targets()
+    time.sleep(random.uniform(10, 40))
