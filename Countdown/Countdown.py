@@ -2,6 +2,7 @@ import itertools
 from tqdm import tqdm
 import logging
 import pandas as pd
+import os
 os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Countdown')
 logging.basicConfig(filename='D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Countdownexample.log', level=logging.DEBUG)
 if os.path.isfile('example.log'):
@@ -14,59 +15,31 @@ def countdown(numbers, target):
     
     # Generate all possible combinations of 1, 2, 3, 4, and 5 numbers
     number_combinations = []
-    for i in range(1, 6):  
+    for i in range(1, len(numbers)):  
         number_combinations.extend(list(itertools.permutations(numbers, i)))
     
-    # Generate all possible combinations of the arithmetic operations
-    operation_combinations_5 = list(itertools.product(['+', '-', '*', '/'], repeat=len(numbers)-1))
+    operation_combinations_dict = {}
+    # Generate all possible combinations of the arithmetic operations as operation_combinations_0,1,2,3
+    for i in range(len(numbers)):
+        variable_name = f"operation_combinations_{i}"
+        operation_combinations_dict[i] = list(itertools.product(['+', '-', '*', '/'], repeat=i))
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # Try each combination of numbers and operations
-    solutions = []
-    list_of_expressions=[]
+    # 
+    solutions=[]
     for nums in tqdm(number_combinations, desc='Numbers'):
-        for ops in tqdm(operation_combinations, desc='Operations', leave=False):
+        t = len(nums)
+        for ops in tqdm(operation_combinations_dict[t-1], leave=False):
             expression = ''
-            for i in range(len(nums)-1):
-                expression += str(nums[i]) + ops[i]
-            list_of_expressions.append(expression)
-            
-            if expression in list_of_expressions:
+            for i in range(len(nums)):
+                if i == len(nums) -1:
+                    expression += str(nums[i])
+                else:                    
+                    expression += str(nums[i]) + ops[i]
+            if expression == '':
                 continue
-            else:
-                expression += str(nums[-1])
-            list_of_expressions.append(expression)
-            
-            
             try:
                 result = eval(expression)
-                logging.debug(str(nums)+str(ops)+str(expression) + " equals " + str(result))
+                #logging.debug(str(nums)+str(ops)+str(expression) + " equals " + str(result))
                 if result == target:
                     solutions.append(expression)
             except ZeroDivisionError:
@@ -86,14 +59,14 @@ solutions = countdown(numbers, target)
 
 solutions_df = pd.DataFrame(solutions)
 solutions_df = solutions_df.drop_duplicates()
-solutions_df.to_csv("solutions.csv")
+solutions_df.to_csv("solutions.csWv")
 
 
-# if solutions:
-#     for solution in solutions:
-#         print(solution)
-# else:
-#     print("No solution found.")
+if solutions:
+    for solution in solutions:
+        print(solution)
+else:
+    print("No solution found.")
 
 
 # if solutions:
