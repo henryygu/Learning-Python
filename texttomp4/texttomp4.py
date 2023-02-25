@@ -45,7 +45,9 @@ for filename in os.listdir(folder):
         sentences = re.split(r'[.\n]', text)
         sentences = list(filter(None, sentences))
         sentences = list(filter(remove_spaces, sentences))
-                     
+        
+        sentencecount = 0
+
         # Create a list to store the audio and video files
         audio_files = []
         video_files = []
@@ -120,6 +122,13 @@ for filename in os.listdir(folder):
                         sentence_video.write_videofile(f"intermediate_{paracount}.mp4")
                         sentence_video.close() # close the final video file after saving it
                         video_files = []
+                        for z in range(i):
+                            try:
+                                os.remove(f"sentence_{i}.mp3") 
+                                os.remove(f"sentence_{i}.mp4")
+                            except:
+                                print(f'failed to delete sentence_{i}')
+
                 
         
         intermediates = ceil(len(sentences)/100)
