@@ -56,6 +56,12 @@ def search_for_targets():
         else:
             print(f"Did not find {target_filename}")
 
-while True:
-    search_for_targets()
-    time.sleep(random.uniform(10, 40))
+count = 0
+#while True:
+while count < 30:
+    print(count)
+    count+=1
+    search_for_targets()    
+    wait_time = random.uniform(10, 40)
+    print(wait_time)
+    time.sleep(wait_time)
