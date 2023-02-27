@@ -114,11 +114,12 @@ for filename in os.listdir(folder):
                             print(f'failed to delete sentence_{z}')
 
 
-                print(f'Appending Paragraph {i} out of {paragraphs}' )
+                
                 if i==0:
                     video_files_paragraph = []
                 elif i!=0 and (i % 100 == 0 or i == len(sentences)):
                     paracount+=1
+                    print(f'Appending Paragraph {paracount} out of {paragraphs}' )
                     video_files_paragraph.append(VideoFileClip(f"paragraph_{i+1}.mp4"))
                     
                     sentence_video_paragraph = concatenate_videoclips(video_files, method="compose")
