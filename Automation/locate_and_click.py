@@ -1,18 +1,19 @@
-import cv2
-import numpy as np
-import pyautogui as pg
 import os
 import time
 import random
+#import cv2
+#import numpy as np
+import pyautogui as pg
 
-os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation') 
+
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
 
 # list of image filenames to search for
-#image_filenames = ["target.png", "target2.png", "target3.png"]
-TARGET_FILENAMES = ["target.png","target1.png"]
-HARVEST_FILENAMES = ["harvestall.png","harvestall2.png"]
-PLANT_FILENAMES = ["plantall.png","plantall2.png"]
+# image_filenames = ["target.png", "target2.png", "target3.png"]
+TARGET_FILENAMES = ["target.png", "target1.png"]
+HARVEST_FILENAMES = ["harvestall.png", "harvestall2.png"]
+PLANT_FILENAMES = ["plantall.png", "plantall2.png"]
 
 
 def find_targets(image_filenames, confidence=0.8):
@@ -26,6 +27,7 @@ def find_targets(image_filenames, confidence=0.8):
         if location is not None:
             locations.append(location)
     return locations
+
 
 def click_targets(locations):
     """
@@ -50,23 +52,24 @@ def search_for_targets():
             print(f"Found {target_filename} at {target_location}")
             harvest_loc = find_targets(HARVEST_FILENAMES)
             click_targets(harvest_loc)
-            pg.moveTo(x,y)
+            pg.moveTo(x, y)
             time.sleep(random.uniform(5, 10))
             plant_location = find_targets(PLANT_FILENAMES)
             click_targets(plant_location)
-            pg.moveTo(x,y)
-            return 'Success'
+            pg.moveTo(x, y)
+            return "Success"
         else:
             print(f"Did not find {target_filename}")
-            return 'Fail'
+            return "Fail"
 
-count = 0
-#while True:
-while count < 30:
-    print(count)
+
+COUNT1 = 0
+# while True:
+while COUNT1 < 30:
+    print(COUNT1)
     s_f = search_for_targets()
-    if s_f == 'Success':
-        count+=1
+    if s_f == "Success":
+        COUNT1 += 1
     wait_time = random.uniform(10, 40)
     print(wait_time)
     time.sleep(wait_time)

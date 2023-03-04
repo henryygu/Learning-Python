@@ -9,11 +9,12 @@ from threading import Thread
 
 logging.basicConfig(level=logging.INFO)
 
-os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation')
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
-image_filenames = ["target.png","target1.png"]
-harvest_filenames = ["harvestall.png","harvestall2.png"]
-plant_filenames = ["plantall.png","plantall2.png"]
+image_filenames = ["target.png", "target1.png"]
+harvest_filenames = ["harvestall.png", "harvestall2.png"]
+plant_filenames = ["plantall.png", "plantall2.png"]
+
 
 def find_targets(image_filenames, confidence=0.8):
     """
@@ -27,6 +28,7 @@ def find_targets(image_filenames, confidence=0.8):
             locations.append(location)
     return locations
 
+
 def click_targets(locations):
     """
     Clicks on all of the locations in the list of tuples containing the
@@ -35,6 +37,7 @@ def click_targets(locations):
     for location in locations:
         center = pg.center(location)
         pg.click(center)
+
 
 def find_and_click_targets(image_filenames, harvest_filenames, plant_filenames):
     x, y = pg.position()
@@ -47,12 +50,13 @@ def find_and_click_targets(image_filenames, harvest_filenames, plant_filenames):
         if target is not None:
             logging.info(f"Found {filename} at {target}")
             click_targets(harvest_locations)
-            pg.moveTo(x,y)
+            pg.moveTo(x, y)
             time.sleep(random.randint(5, 10))
             click_targets(plant_locations)
-            pg.moveTo(x,y)
+            pg.moveTo(x, y)
         else:
             logging.info(f"Did not find {filename}")
+
 
 def run_script():
     while True:
@@ -62,7 +66,8 @@ def run_script():
         except Exception as e:
             logging.error(e)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     threads = []
     for i in range(5):
         t = Thread(target=run_script)
