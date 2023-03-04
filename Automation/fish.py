@@ -5,14 +5,15 @@ import os
 import time
 import random
 
+from pyscreeze import screenshot
+
 os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation') 
 
 
 # list of image filenames to search for
 #image_filenames = ["target.png", "target2.png", "target3.png"]
-TARGET_FILENAMES = ["target.png","target1.png"]
-HARVEST_FILENAMES = ["harvestall.png","harvestall2.png"]
-PLANT_FILENAMES = ["plantall.png","plantall2.png"]
+TARGET_FILENAMES = ["fish1.png"]
+Fish_area = "fish_area.png"
 
 
 def find_targets(image_filenames, confidence=0.8):
@@ -44,17 +45,16 @@ def search_for_targets():
     """
     # Search for each target image and perform the corresponding action if found
     x, y = pg.position()
+    
+    boundaries = pg.locateOnScreen(Fish_area, confidence=0.6)
+    boundaries_tuple = (boundaries.left, boundaries.top, boundaries.width, boundaries.height)
     for target_filename in TARGET_FILENAMES:
-        target_location = pg.locateOnScreen(target_filename, confidence=0.9)
+        target_location = pg.locateOnScreen(target_filename, confidence=0.9, region = boundaries_tuple)
         if target_location is not None:
             print(f"Found {target_filename} at {target_location}")
-            harvest_loc = find_targets(HARVEST_FILENAMES)
-            click_targets(harvest_loc)
-            pg.moveTo(x,y)
-            time.sleep(random.uniform(5, 10))
-            plant_location = find_targets(PLANT_FILENAMES)
-            click_targets(plant_location)
-            pg.moveTo(x,y)
+            pg.click(pg.moveTo(pg.center(target_location)))
+            print(target_location)
+            #pg.moveTo(x,y)
             return 'Success'
         else:
             print(f"Did not find {target_filename}")
@@ -67,6 +67,16 @@ while count < 30:
     s_f = search_for_targets()
     if s_f == 'Success':
         count+=1
-    wait_time = random.uniform(10, 40)
-    print(wait_time)
-    time.sleep(wait_time)
+    # wait_time = random.uniform(10, 40)
+    # print(wait_time)
+    # time.sleep(wait_time)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
