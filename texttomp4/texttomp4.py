@@ -11,7 +11,7 @@ from moviepy.editor import (
     concatenate_audioclips,
     concatenate_videoclips,
 )
-
+import subprocess
 
 def remove_spaces(sentence):
     return sentence.strip() != ""
@@ -112,6 +112,22 @@ for filename in os.listdir(folder):
                             os.remove(f"sentence_{z}.mp4")
                         except:
                             print(f"failed to delete sentence_{z}")
+    mp4_files = []
+    for filename in os.listdir():
+        if "paragraph" in filename:
+            if filename.endswith(".mp4"):
+                mp4_files.append(filename)          
+    mp4_files = sorted(mp4_files, key=lambda x: int(x.split("_")[1].split(".")[0]))
+    with open('list.txt', 'w') as f:
+        for file in mp4_files:
+            f.write(f"file '{file}'\n")
+            
+    
+    
+    # Run the ffmpeg command with Nvidia GPU acceleration
+    #command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
+    command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4'
+    subprocess.call(command, shell=True)       
                 # if i == 0:
                 #     video_files_paragraph = []
                 # elif i != 0 and (i % 100 == 0 or i == len(sentences)):
@@ -130,33 +146,30 @@ for filename in os.listdir(folder):
                 #     )
                 #     sentence_video_paragraph.close()  # close the final video file after saving it
                 #     video_files_paragraph = []
- 
- 
-        for i in range(1,intermediates):
-            print(f"Appending intermediates {i} out of {intermediates}")
-            video_files_intermediate.append(VideoFileClip(f"intermediate_{i+1}.mp4"))
-            video_files_intermediate.append(VideoFileClip(f"intermediate_{i+1}.mp4"))
 
-            sentence_video_intermediate = concatenate_videoclips(
-                video_files_intermediate, method="compose"
-            )
+        # for i in range(1,paragraphs):
+        #     print(f"Appending intermediates {i} out of {paragraphs}")
+        #     video_files_intermediate.append(VideoFileClip(f"intermediate_{i}.mp4"))
+        #     sentence_video_intermediate = concatenate_videoclips(
+        #         video_files_intermediate, method="compose"
+        #     )
 
-            # Write the final video file with the same name as the input text file
-            # final_video.write_videofile(f"{os.path.splitext(filename)[0]}_final_video.mp4")
-            sentence_video_intermediate.write_videofile(
-                os.path.join("Output", f"{os.path.splitext(filename)[0]}_final.mp4")
-            )
-            sentence_video_intermediate.close()  # close the final video file after saving it
-            video_files_intermediate = []
+        #     # Write the final video file with the same name as the input text file
+        #     # final_video.write_videofile(f"{os.path.splitext(filename)[0]}_final_video.mp4")
+        #     sentence_video_intermediate.write_videofile(
+        #         os.path.join("Output", f"{os.path.splitext(filename)[0]}_final.mp4")
+        #     )
+        #     sentence_video_intermediate.close()  # close the final video file after saving it
+        #     video_files_intermediate = []
 
         # Delete the intermediate files
         for i in range(len(sentences)):
             try:
                 os.remove(f"sentence_{i}.mp3")
                 os.remove(f"sentence_{i}.mp4")
-                os.remove(f"paragraph_{i}.mp4")
-                os.remove(f"intermediate_{i}.mp4")
+                #os.remove(f"paragraph_{i}.mp4")
+                #os.remove(f"intermediate_{i}.mp4")
             except:
                 print(i)
-    # os.remove(os.path.join(folder,filename))
-    move(os.path.join(folder, filename), os.path.join(donefolder, filename))
+# os.remove(os.path.join(folder,filename))
+move(os.path.join(folder, filename), os.path.join(donefolder, filename))
