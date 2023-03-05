@@ -47,42 +47,34 @@ for filename in os.listdir(folder):
         # Load the text file
         with open(os.path.join(folder, filename), "r", encoding="utf8") as file:
             text = file.read()
-
         # Split the text into sentences based on new line or full stops
         sentences = re.split(r"[.\n]", text)
         sentences = list(filter(None, sentences))
         sentences = list(filter(remove_spaces, sentences))
-
         # Create a list to store the audio and video files
         audio_files = []
         video_files = []
         video_files_paragraph = []
         video_files_intermediate = []
-
         paragraphs = ceil(len(sentences) / 10)
         intermediates = ceil(len(sentences) / 100)
-
         # Convert each sentence into a text to speech mp3 file and video file
         for i, sentence in enumerate(sentences, 1):
             print(f"Generating {i} out of {len(sentences)}")
             print(sentence)
-
             if len(sentence) != 0:
                 # Convert the sentence into an mp3 file using gTTS
                 tts = gTTS(text=sentence, lang="en",tld='com.au', slow=False)
                 try:
                     tts.save(f"sentence_{i}.mp3")
                 except:
-                    print("try failed")
+                    # print("try failed")
                     # create 2 seconds of silence
                     silence1 = AudioSegment.silent(duration=2000)
-
                     # export silence as mp3 file
                     silence1.export(f"sentence_{i}.mp3", format="mp3")
-
                 # Load the mp3 file into a pydub AudioSegment object
                 audio = AudioSegment.from_file(f"sentence_{i}.mp3", format="mp3")
-
                 # Create a video file with the sentence text
                 video = TextClip(
                     sentence,
@@ -96,23 +88,17 @@ for filename in os.listdir(folder):
                 video = video.set_duration(audio.duration_seconds)
                 video.write_videofile(f"sentence_{i}.mp4", fps=24)
                 video.close()
-
                 print(f"Appending Sentence {i} out of {len(sentences)}")
                 audio_files.append(AudioFileClip(f"sentence_{i}.mp3"))
                 video_files.append(VideoFileClip(f"sentence_{i}.mp4"))
                 if i != 0 and (i % 10 == 0 or i == len(sentences)):
                     sentencecount += 1
-                    # audio_files.append(AudioFileClip(f"sentence_{i}.mp3"))
-                    # video_files.append(VideoFileClip(f"sentence_{i}.mp4"))
-
                     sentence_video = concatenate_videoclips(
                         video_files, method="compose"
                     )
                     sentence_audio = concatenate_audioclips(audio_files)
-
                     # Overlay the audio on top of the video
                     sentence_video = sentence_video.set_audio(sentence_audio)
-
                     # Write the final video file with the same name as the input text file
                     # final_video.write_videofile(f"{os.path.splitext(filename)[0]}_final_video.mp4")
                     sentence_video.write_videofile(f"paragraph_{sentencecount}.mp4")
@@ -126,33 +112,33 @@ for filename in os.listdir(folder):
                             os.remove(f"sentence_{z}.mp4")
                         except:
                             print(f"failed to delete sentence_{z}")
+                # if i == 0:
+                #     video_files_paragraph = []
+                # elif i != 0 and (i % 100 == 0 or i == len(sentences)):
+                #     paracount += 1
+                #     print(f"Appending Paragraph {paracount} out of {paragraphs}")
+                #     video_files_paragraph.append(VideoFileClip(f"paragraph_{paracount}.mp4"))
 
-                if i == 0:
-                    video_files_paragraph = []
-                elif i != 0 and (i % 100 == 0 or i == len(sentences)):
-                    paracount += 1
-                    print(f"Appending Paragraph {paracount} out of {paragraphs}")
-                    video_files_paragraph.append(VideoFileClip(f"paragraph_{i+1}.mp4"))
+                #     sentence_video_paragraph = concatenate_videoclips(
+                #         video_files_paragraph, method="compose"
+                #     )
 
-                    sentence_video_paragraph = concatenate_videoclips(
-                        video_files, method="compose"
-                    )
-
-                    # Write the final video file with the same name as the input text file
-                    # final_video.write_videofile(f"{os.path.splitext(filename)[0]}_final_video.mp4")
-                    sentence_video_paragraph.write_videofile(
-                        f"intermediate_{paracount}.mp4"
-                    )
-                    sentence_video_paragraph.close()  # close the final video file after saving it
-                    video_files_paragraph = []
-
-        for i in range(intermediates):
+                #     # Write the final video file with the same name as the input text file
+                #     # final_video.write_videofile(f"{os.path.splitext(filename)[0]}_final_video.mp4")
+                #     sentence_video_paragraph.write_videofile(
+                #         f"intermediate_{paracount}.mp4"
+                #     )
+                #     sentence_video_paragraph.close()  # close the final video file after saving it
+                #     video_files_paragraph = []
+ 
+ 
+        for i in range(1,intermediates):
             print(f"Appending intermediates {i} out of {intermediates}")
             video_files_intermediate.append(VideoFileClip(f"intermediate_{i+1}.mp4"))
             video_files_intermediate.append(VideoFileClip(f"intermediate_{i+1}.mp4"))
 
             sentence_video_intermediate = concatenate_videoclips(
-                video_files, method="compose"
+                video_files_intermediate, method="compose"
             )
 
             # Write the final video file with the same name as the input text file
