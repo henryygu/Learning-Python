@@ -1,0 +1,38 @@
+name: Lint
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: pip install black==22.10.0 flake8==5.0.4
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          black: true
+          black_args: "-l79"
+          black_auto_fix: true
+          flake8: true
+#           template for supressing long line errors in specific filepaths
+#           flake8_args: "--ignore=E501 src/configs/"
