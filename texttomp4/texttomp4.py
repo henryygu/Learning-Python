@@ -34,8 +34,11 @@ highest_i = max(numbers)
 
 
 # debug
-filename = os.listdir(folder)[0]
+# filename = os.listdir(folder)[0
 
+
+def get_number(filename):
+    return int(re.search(r'\d+', filename).group())
 
 sentencecount = 0
 paracount = 0
@@ -101,14 +104,15 @@ for filename in os.listdir(folder):
             if "sentence_merge_" in filename_1:
                 if filename_1.endswith(".mp4"):
                     mp4_files.append(filename_1)          
-        mp4_files = sorted(mp4_files, key=lambda x: int(x.split("_")[1].split(".")[0]))
+        mp4_files_sorted = sorted_list = sorted(mp4_files, key=get_number)
         with open('list.txt', 'w') as f:
-            for file in mp4_files:
+            for file in mp4_files_sorted:
                 f.write(f"file '{file}'\n")
         # Run the ffmpeg command with Nvidia GPU acceleration
-        #command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
+        # command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
         final_file_save_loc = os.path.join("Output", f"{os.path.splitext(filename)[0]}.mp4")
-        command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy {final_file_save_loc}'
+        #command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy "{final_file_save_loc}"'
+        command = f'ffmpeg -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 "{final_file_save_loc}"'
         subprocess.call(command, shell=True)       
         os.remove(f"list.txt")
     # Delete the intermediate files
