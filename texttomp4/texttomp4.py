@@ -71,9 +71,8 @@ for filename in os.listdir(folder):
                     except:
                         # print("try failed")
                         # create 2 seconds of silence
-                        silence1 = AudioSegment.silent(duration=2000)
-                        # export silence as mp3 file
-                        silence1.export(f"sentence_{i}.mp3", format="mp3")
+                        cmd_1 = f'ffmpeg -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
+                        subprocess.call(cmd_1,shell=True)
                     # Load the mp3 file into a pydub AudioSegment object
                     audio = AudioSegment.from_file(f"sentence_{i}.mp3", format="mp3")
                     # Create a video file with the sentence text
