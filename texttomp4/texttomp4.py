@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import re
 import os
 from shutil import move
@@ -12,6 +13,8 @@ from moviepy.editor import (
     concatenate_videoclips,
 )
 import subprocess
+import numpy as np
+from PIL import Image
 
 def remove_spaces(sentence):
     return sentence.strip() != ""
@@ -28,13 +31,15 @@ existingfiles = os.listdir()
 mp4_files = [f for f in existingfiles if f.endswith(".mp4")] # mp4 files are created last
 filtered_list = [item for item in mp4_files if 'sentence_merge' in item]
 numbers = [int(re.search(r'\d+', item).group()) for item in filtered_list]
-highest_i = max(numbers)
 #i_values = [int(re.search(r"sentence_merge_(\d+)", f).group(0)) for f in mp4_files]
 # # find the highest value of i
-
+if len(numbers) == 0:
+    highest_i = -1
+else:
+    highest_i = max(numbers)
 
 # debug
-# filename = os.listdir(folder)[0
+# filename = os.listdir(folder)[0]
 
 
 def get_number(filename):
@@ -46,6 +51,10 @@ paracount = 0
 # Loop through all the text files in the folder
 for filename in os.listdir(folder):
     print(filename)
+    if len(numbers) == 0:
+        highest_i = -1
+    else:
+        highest_i = max(numbers)
     if filename.endswith(".txt"):
         # Load the text file
         with open(os.path.join(folder, filename), "r", encoding="utf8") as file:
@@ -76,23 +85,21 @@ for filename in os.listdir(folder):
                         # create 2 seconds of silence
                         cmd_1 = f'ffmpeg -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
                         subprocess.call(cmd_1,shell=True)
-                    # Load the mp3 file into a pydub AudioSegment object
-                    audio = AudioSegment.from_file(f"sentence_{i}.mp3", format="mp3")
+                
                     # Create a video file with the sentence text
                     video = TextClip(
                         sentence,
                         font="Arial",
                         fontsize=48,
                         color="white",
+                        bg_color="black",  # Add a black background color
                         method="caption",
                         align="center",
                         size=screensize,
                     )
-                    video = video.set_duration(audio.duration_seconds)
-                    video.write_videofile(f"sentence_{i}.mp4", fps=24)
-                    video.close()
+                    video.save_frame(f"frame_{i}.png", t=1)
                     print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -i sentence_{i}.mp4 -i sentence_{i}.mp3 -c copy sentence_merge_{i}.mp4'
+                    sentence_cmd = f'ffmpeg -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
                         os.remove(f"sentence_{i}.mp3")
@@ -117,15 +124,7 @@ for filename in os.listdir(folder):
         os.remove(f"list.txt")
     # Delete the intermediate files
         for i in range(len(sentences)):
-            try:
-                os.remove(f"sentence_merge_{i}.mp4")
-            except:
-                print(i)
+            os.remove(f"sentence_merge_{i}.mp4")
+
         # os.remove(os.path.join(folder,filename))
         move(os.path.join(folder, filename), os.path.join(donefolder, filename))
-
-
-
-
-
-
