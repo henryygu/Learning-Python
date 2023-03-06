@@ -103,7 +103,7 @@ for filename in os.listdir(folder):
                     subprocess.call(sentence_cmd,shell=True)
                     try:
                         os.remove(f"sentence_{i}.mp3")
-                        os.remove(f"sentence_{i}.mp4")
+                        os.remove(f"frame_{i}.png")
                     except:
                         print(i)
         mp4_files = []
