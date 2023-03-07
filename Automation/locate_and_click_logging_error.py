@@ -13,10 +13,7 @@ import pyautogui as pg
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s]: %(message)s",
-    handlers=[
-        logging.FileHandler("automation.log"),
-        logging.StreamHandler()
-    ]
+    handlers=[logging.FileHandler("automation.log"), logging.StreamHandler()],
 )
 logger = logging.getLogger()
 
@@ -87,9 +84,9 @@ def automation_loop():
             time.sleep(5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Change working directory to image folder
-    os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation')
+    os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
     # Start multiple automation threads
     num_threads = 3

@@ -7,11 +7,11 @@ import random
 
 from pyscreeze import screenshot
 
-os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation') 
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
 
 # list of image filenames to search for
-#image_filenames = ["target.png", "target2.png", "target3.png"]
+# image_filenames = ["target.png", "target2.png", "target3.png"]
 TARGET_FILENAMES = ["fish1.png"]
 Fish_area = "fish_area.png"
 
@@ -27,6 +27,7 @@ def find_targets(image_filenames, confidence=0.8):
         if location is not None:
             locations.append(location)
     return locations
+
 
 def click_targets(locations):
     """
@@ -45,38 +46,36 @@ def search_for_targets():
     """
     # Search for each target image and perform the corresponding action if found
     x, y = pg.position()
-    
+
     boundaries = pg.locateOnScreen(Fish_area, confidence=0.6)
-    boundaries_tuple = (boundaries.left, boundaries.top, boundaries.width, boundaries.height)
+    boundaries_tuple = (
+        boundaries.left,
+        boundaries.top,
+        boundaries.width,
+        boundaries.height,
+    )
     for target_filename in TARGET_FILENAMES:
-        target_location = pg.locateOnScreen(target_filename, confidence=0.9, region = boundaries_tuple)
+        target_location = pg.locateOnScreen(
+            target_filename, confidence=0.9, region=boundaries_tuple
+        )
         if target_location is not None:
             print(f"Found {target_filename} at {target_location}")
             pg.click(pg.moveTo(pg.center(target_location)))
             print(target_location)
-            #pg.moveTo(x,y)
-            return 'Success'
+            # pg.moveTo(x,y)
+            return "Success"
         else:
             print(f"Did not find {target_filename}")
-            return 'Fail'
+            return "Fail"
+
 
 count = 0
-#while True:
+# while True:
 while count < 30:
     print(count)
     s_f = search_for_targets()
-    if s_f == 'Success':
-        count+=1
+    if s_f == "Success":
+        count += 1
     # wait_time = random.uniform(10, 40)
     # print(wait_time)
     # time.sleep(wait_time)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
