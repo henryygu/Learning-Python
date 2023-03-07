@@ -1,20 +1,18 @@
-from asyncio.windows_events import NULL
 import re
 import os
 from shutil import move
 from math import ceil
-from gtts import gTTS
-from pydub import AudioSegment
-from moviepy.editor import (
-    AudioFileClip,
-    VideoFileClip,
-    TextClip,
-    concatenate_audioclips,
-    concatenate_videoclips,
-)
 import subprocess
-import numpy as np
+from gtts import gTTS
+from moviepy.editor import (
+    TextClip,
+)
 from PIL import Image
+import logging
+
+from tqdm import tqdm
+
+logging.basicConfig(level=logging.WARNING)
 
 def remove_spaces(sentence):
     return sentence.strip() != ""
@@ -50,7 +48,7 @@ paracount = 0
 
 # Loop through all the text files in the folder
 for filename in os.listdir(folder):
-    print(filename)
+    #print(filename)
     if len(numbers) == 0:
         highest_i = -1
     else:
@@ -71,9 +69,10 @@ for filename in os.listdir(folder):
         paragraphs = ceil(len(sentences) / 10)
         intermediates = ceil(len(sentences) / 100)
         # Convert each sentence into a text to speech mp3 file and video file
-        for i, sentence in enumerate(sentences, 1):
-            print(f"Generating {i} out of {len(sentences)}")
-            print(sentence)
+        print(filename)
+        for i, sentence in enumerate(tqdm(sentences), 1):
+            #print(f"Generating {i} out of {len(sentences)}")
+            #print(sentence)
             if i > highest_i:
                 if len(sentence) != 0:
                     # Convert the sentence into an mp3 file using gTTS
@@ -81,9 +80,9 @@ for filename in os.listdir(folder):
                     try:
                         tts.save(f"sentence_{i}.mp3")
                     except:
-                        # print("try failed")
+                        # #print("try failed")
                         # create 2 seconds of silence
-                        cmd_1 = f'ffmpeg -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
+                        cmd_1 = f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
                         subprocess.call(cmd_1,shell=True)
                 
                     # Create a video file with the sentence text
@@ -98,8 +97,8 @@ for filename in os.listdir(folder):
                         size=screensize,
                     )
                     video.save_frame(f"frame_{i}.png", t=1)
-                    print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
+                    #print(f"Appending Sentence {i} out of {len(sentences)}")
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
                         os.remove(f"sentence_{i}.mp3")
@@ -119,12 +118,20 @@ for filename in os.listdir(folder):
         # command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
         final_file_save_loc = os.path.join("Output", f"{os.path.splitext(filename)[0]}.mp4")
         #command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy "{final_file_save_loc}"'
-        command = f'ffmpeg -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 "{final_file_save_loc}"'
+        command = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 "{final_file_save_loc}"'
+        print("final merge")
         subprocess.call(command, shell=True)       
         os.remove(f"list.txt")
-    # Delete the intermediate files
-        for i in range(len(sentences)):
-            os.remove(f"sentence_merge_{i}.mp4")
-
+        # Delete the intermediate files
+        #mp4_files_end = [f for f in os.listdir() if f.endswith(".mp4")] # mp4 files are created last
+        mp4_files_end = os.listdir()
+        filtered_list_end = [item for item in mp4_files_end if 'sentence' in item]
+        for z in filtered_list_end:
+            print(z)
+            try:
+                os.remove(z)
+                
+            except:
+                print("An exception occurred")
         # os.remove(os.path.join(folder,filename))
         move(os.path.join(folder, filename), os.path.join(donefolder, filename))
