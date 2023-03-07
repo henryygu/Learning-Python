@@ -11,11 +11,11 @@ os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation')
 # list of image filenames to search for
 #image_filenames = ["target.png", "target2.png", "target3.png"]
 TARGET_FILENAMES = ["target.png","target1.png"]
-HARVEST_FILENAMES = ["harvestall.png","harvestall2.png"]
-PLANT_FILENAMES = ["plantall.png","plantall2.png"]
+HARVEST_FILENAMES = ["Harvestall.png"]
+PLANT_FILENAMES = ["plantall.png"]
 
 
-def find_targets(image_filenames, confidence=0.8):
+def find_targets(image_filenames, confidence=0.7):
     """
     Finds the locations of the target images and returns a list of tuples
     containing the (x, y) coordinates of each location.
@@ -69,4 +69,4 @@ while count < 30:
         count+=1
     wait_time = random.uniform(10, 40)
     print(wait_time)
-    time.sleep(wait_time)
+    #time.sleep(wait_time)
