@@ -19,6 +19,7 @@ def remove_spaces(sentence):
 
 
 os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\texttomp4")
+
 folder = "Files"
 donefolder = "Done"
 
