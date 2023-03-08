@@ -99,7 +99,7 @@ for filename in os.listdir(folder):
                     )
                     video.save_frame(f"frame_{i}.png", t=1)
                     #print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v h264_nvenc -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
                         os.remove(f"sentence_{i}.mp3")
