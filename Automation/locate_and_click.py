@@ -10,13 +10,13 @@ os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
 
 # list of image filenames to search for
-# image_filenames = ["target.png", "target2.png", "target3.png"]
-TARGET_FILENAMES = ["target.png", "target1.png"]
-HARVEST_FILENAMES = ["harvestall.png", "harvestall2.png"]
-PLANT_FILENAMES = ["plantall.png", "plantall2.png"]
+#image_filenames = ["target.png", "target2.png", "target3.png"]
+TARGET_FILENAMES = ["target1.png"]
+HARVEST_FILENAMES = ["Harvestall1.png"]
+PLANT_FILENAMES = ["plantall.png"]
 
 
-def find_targets(image_filenames, confidence=0.8):
+def find_targets(image_filenames, confidence=0.9):
     """
     Finds the locations of the target images and returns a list of tuples
     containing the (x, y) coordinates of each location.
@@ -50,26 +50,22 @@ def search_for_targets():
         target_location = pg.locateOnScreen(target_filename, confidence=0.9)
         if target_location is not None:
             print(f"Found {target_filename} at {target_location}")
-            harvest_loc = find_targets(HARVEST_FILENAMES)
-            click_targets(harvest_loc)
-            pg.moveTo(x, y)
+            harvest_loc = pg.locateOnScreen(HARVEST_FILENAMES[0], confidence=0.9)
+            harvest_loc_centre = pg.center(harvest_loc)
+            pg.click(harvest_loc_centre[0],harvest_loc_centre[1]-50)
+            pg.moveTo(x,y)
             time.sleep(random.uniform(5, 10))
             plant_location = find_targets(PLANT_FILENAMES)
             click_targets(plant_location)
-            pg.moveTo(x, y)
-            return "Success"
+            pg.moveTo(x,y)
         else:
             print(f"Did not find {target_filename}")
-            return "Fail"
 
-
-COUNT1 = 0
-# while True:
-while COUNT1 < 30:
-    print(COUNT1)
-    s_f = search_for_targets()
-    if s_f == "Success":
-        COUNT1 += 1
+count = 0
+#while True:
+while count < 30:
+    print(count)
+    search_for_targets()
     wait_time = random.uniform(10, 40)
     print(wait_time)
-    time.sleep(wait_time)
+    #time.sleep(wait_time)
