@@ -1,11 +1,12 @@
-import cv2
-import numpy as np
-import pyautogui as pg
 import os
 import time
 import random
+#import cv2
+#import numpy as np
+import pyautogui as pg
 
-os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation') 
+
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
 
 # list of image filenames to search for
@@ -26,6 +27,7 @@ def find_targets(image_filenames, confidence=0.9):
         if location is not None:
             locations.append(location)
     return locations
+
 
 def click_targets(locations):
     """
