@@ -7,7 +7,6 @@ from gtts import gTTS
 from moviepy.editor import (
     TextClip,
 )
-from PIL import Image
 import logging
 
 from tqdm import tqdm
@@ -30,7 +29,7 @@ existingfiles = os.listdir()
 mp4_files = [f for f in existingfiles if f.endswith(".mp4")] # mp4 files are created last
 filtered_list = [item for item in mp4_files if 'sentence_merge' in item]
 numbers = [int(re.search(r'\d+', item).group()) for item in filtered_list]
-#i_values = [int(re.search(r"sentence_merge_(\d+)", f).group(0)) for f in mp4_files]
+# i_values = [int(re.search(r"sentence_merge_(\d+)", f).group(0)) for f in mp4_files]
 # # find the highest value of i
 if len(numbers) == 0:
     highest_i = -1
@@ -43,6 +42,7 @@ else:
 
 def get_number(filename):
     return int(re.search(r'\d+', filename).group())
+
 
 sentencecount = 0
 paracount = 0
@@ -119,10 +119,10 @@ for filename in os.listdir(folder):
         # command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
         final_file_save_loc = os.path.join("Output", f"{os.path.splitext(filename)[0]}.mp4")
         #command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy "{final_file_save_loc}"'
-        command = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 "{final_file_save_loc}"'
+        command = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc "{final_file_save_loc}"'
         print("final merge")
-        subprocess.call(command, shell=True)       
-        os.remove(f"list.txt")
+        subprocess.call(command, shell=True)
+        os.remove("list.txt")
         # Delete the intermediate files
         #mp4_files_end = [f for f in os.listdir() if f.endswith(".mp4")] # mp4 files are created last
         mp4_files_end = os.listdir()
@@ -131,8 +131,40 @@ for filename in os.listdir(folder):
             print(z)
             try:
                 os.remove(z)
-                
             except:
                 print("An exception occurred")
         # os.remove(os.path.join(folder,filename))
-        move(os.path.join(folder, filename), os.path.join(donefolder, filename))
+        move(os.path.join(folder, filename),
+             os.path.join(donefolder, filename))
+
+
+##check
+
+import time
+import subprocess
+import os
+import re
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\texttomp4")
+
+def get_number(filename):
+    return int(re.search(r'\d+', filename).group())
+mp4_files = []
+for filename_1 in os.listdir():
+    if "sentence_merge_" in filename_1:
+        if filename_1.endswith(".mp4"):
+            mp4_files.append(filename_1)          
+mp4_files_sorted = sorted_list = sorted(mp4_files, key=get_number)
+with open('list.txt', 'w') as f:
+    for file in mp4_files_sorted:
+        f.write(f"file '{file}'\n")
+
+command2 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc output2.mp4'
+command1 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 output1.mp4'
+starttime = time.time()
+subprocess.call(command1, shell=True)
+endtime = time.time()
+subprocess.call(command2, shell=True)
+endtime2 = time.time()
+
+endtime2-endtime
+endtime-starttime
