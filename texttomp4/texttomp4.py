@@ -136,6 +136,7 @@ for filename in os.listdir(folder):
         # os.remove(os.path.join(folder,filename))
         move(os.path.join(folder, filename),
              os.path.join(donefolder, filename))
+        highest_i = -1
 
 
 ##check
