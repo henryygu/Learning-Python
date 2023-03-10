@@ -38,6 +38,9 @@ else:
 
 # debug
 # filename = os.listdir(folder)[0]
+# i = 2
+# sentence = sentences[i]
+
 
 
 def get_number(filename):
@@ -71,9 +74,9 @@ for filename in os.listdir(folder):
         intermediates = ceil(len(sentences) / 100)
         # Convert each sentence into a text to speech mp3 file and video file
         print(filename)
-        for i, sentence in enumerate(tqdm(sentences), 1):
-            #print(f"Generating {i} out of {len(sentences)}")
-            #print(sentence)
+        for i, sentence in enumerate(sentences):
+            print(f"Generating {i} out of {len(sentences)}")
+            print(sentence)
             if i > highest_i:
                 if len(sentence) != 0:
                     # Convert the sentence into an mp3 file using gTTS
@@ -83,7 +86,7 @@ for filename in os.listdir(folder):
                     except:
                         # #print("try failed")
                         # create 2 seconds of silence
-                        cmd_1 = f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
+                        cmd_1 = f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame "sentence_{i}.mp3"'
                         subprocess.call(cmd_1,shell=True)
                 
                     # Create a video file with the sentence text
@@ -99,13 +102,10 @@ for filename in os.listdir(folder):
                     )
                     video.save_frame(f"frame_{i}.png", t=1)
                     #print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v h264_nvenc -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest "sentence_merge_{i}.mp4"'
                     subprocess.call(sentence_cmd,shell=True)
-                    try:
-                        os.remove(f"sentence_{i}.mp3")
-                        os.remove(f"frame_{i}.png")
-                    except:
-                        print(i)
+                    os.remove(f"sentence_{i}.mp3")
+                    os.remove(f"frame_{i}.png")
         mp4_files = []
         for filename_1 in os.listdir():
             if "sentence_merge_" in filename_1:
@@ -119,7 +119,8 @@ for filename in os.listdir(folder):
         # command = f'ffmpeg -hwaccel_output_format cuda -i "concat:{files}" -c:v h264_nvenc -preset fast -movflags +faststart -c:a copy output.mp4'
         final_file_save_loc = os.path.join("Output", f"{os.path.splitext(filename)[0]}.mp4")
         #command = f'ffmpeg -safe 0 -f concat -i list.txt -c copy "{final_file_save_loc}"'
-        command = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc "{final_file_save_loc}"'
+        #command = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc "{final_file_save_loc}"'
+        command = f'ffmpeg -y -hide_banner -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc "{final_file_save_loc}"'
         print("final merge")
         subprocess.call(command, shell=True)
         os.remove("list.txt")
@@ -133,10 +134,11 @@ for filename in os.listdir(folder):
                 os.remove(z)
             except:
                 print("An exception occurred")
+        highest_i = -1
         # os.remove(os.path.join(folder,filename))
         move(os.path.join(folder, filename),
              os.path.join(donefolder, filename))
-        highest_i = -1
+
 
 
 ##check
