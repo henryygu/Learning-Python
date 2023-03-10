@@ -6,7 +6,7 @@ import random
 import pyautogui as pg
 
 
-os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\image_recog")
 
 
 # list of image filenames to search for

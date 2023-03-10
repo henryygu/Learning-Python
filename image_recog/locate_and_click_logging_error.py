@@ -86,7 +86,7 @@ def automation_loop():
 
 if __name__ == "__main__":
     # Change working directory to image folder
-    os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
+    os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\image_recog")
 
     # Start multiple automation threads
     num_threads = 3

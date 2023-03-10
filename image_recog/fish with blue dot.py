@@ -6,7 +6,7 @@ import time
 import random
 import keyboard
 
-os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation') 
+os.chdir('D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\image_recog') 
 
 
 # list of image filenames to search for
@@ -22,6 +22,11 @@ count = 0
     #boundaries = pg.locateOnScreen(Fish_area, confidence=0.6)
     #boundaries_tuple = (boundaries.left, boundaries.top, boundaries.width, boundaries.height)
 
+def click(x,y):
+    win32api.SetCursorPos((x,y))
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,0,0)
+    time.sleep(0.1) #This pauses the script for 0.1 seconds
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,0,0)
 
 
 while True: 
@@ -40,10 +45,7 @@ while True:
         pg.click(pg.center(bluedot_loc))
         bluedot_loc = pg.locateOnScreen(bluedot, confidence=0.9)
         bluedot_loc = None
-        
-                
 
-    
     
     
     

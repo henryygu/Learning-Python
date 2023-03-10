@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 from sklearn.cluster import KMeans
 
-path = "D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation\\targetimg.jpg"
+path = "D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\image_recog\\targetimg.jpg"
 img = Image.open(path)
 
 canvasOffset = (50, 144)

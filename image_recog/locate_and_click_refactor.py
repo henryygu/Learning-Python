@@ -4,7 +4,7 @@ import os
 import pyautogui as py
 import cv2
 import keyboard
-os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\image_recog")
 
 
 # Load target and bluedot images
