@@ -3,12 +3,12 @@ import os
 from shutil import move
 from math import ceil
 import subprocess
-from gtts import gTTS
+#from gtts import gTTS
 from moviepy.editor import (
     TextClip,
 )
 import logging
-
+from TTS.api import TTS
 from tqdm import tqdm
 
 logging.basicConfig(level=logging.WARNING)
@@ -43,6 +43,8 @@ else:
 def get_number(filename):
     return int(re.search(r'\d+', filename).group())
 
+model_name = TTS.list_models()[7]
+tts = TTS(model_name)
 
 sentencecount = 0
 paracount = 0
@@ -76,11 +78,9 @@ for filename in os.listdir(folder):
             #print(sentence)
             if i > highest_i:
                 if len(sentence) != 0:
-                    print(f'{i} out of {len(sentences)}')
                     # Convert the sentence into an mp3 file using gTTS
-                    tts = gTTS(text=sentence, lang="en",tld='com.au', slow=False)
                     try:
-                        tts.save(f"sentence_{i}.mp3")
+                        tts.tts_to_file(text=sentence, file_path=f"sentence_{i}.mp3")
                     except:
                         # #print("try failed")
                         # create 2 seconds of silence
@@ -100,13 +100,13 @@ for filename in os.listdir(folder):
                     )
                     video.save_frame(f"frame_{i}.png", t=1)
                     #print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a aac -shortest sentence_merge_{i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
                         os.remove(f"sentence_{i}.mp3")
                         os.remove(f"frame_{i}.png")
                     except:
-                        print(f'error with deletion{i}')
+                        print(i)
         mp4_files = []
         for filename_1 in os.listdir():
             if "sentence_merge_" in filename_1:
@@ -170,3 +170,4 @@ endtime2 = time.time()
 
 endtime2-endtime
 endtime-starttime
+
