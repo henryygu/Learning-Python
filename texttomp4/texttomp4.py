@@ -1,14 +1,17 @@
 import re
 import os
+import time
 from shutil import move
 from math import ceil
 import subprocess
 from gtts import gTTS
 from moviepy.editor import (
     TextClip,
+    ImageClip,
+    ColorClip
 )
 import logging
-
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from tqdm import tqdm
 
 logging.basicConfig(level=logging.WARNING)
@@ -71,20 +74,47 @@ for filename in os.listdir(folder):
         intermediates = ceil(len(sentences) / 100)
         # Convert each sentence into a text to speech mp3 file and video file
         print(filename)
+        regex = r'^(\w+)\s-\s(.+)_Chapter_(\d+)\.txt$'
+        match = re.match(regex, filename)
+        writer = match.group(1) 
+        story_name = match.group(2)
+        chapter = match.group(3)
+        title_name = f'{story_name} by {writer}. Chapter {chapter}' 
         for i, sentence in enumerate(sentences, 1):
             #print(f"Generating {i} out of {len(sentences)}")
             #print(sentence)
+            starttime = time.time()
+            format_i = "{:03d}".format(i)
             if i > highest_i:
+                if i == 1:                 
+                    video_start = TextClip(
+                        title_name,
+                        font="Arial",
+                        fontsize=48,
+                        color="white",
+                        #bg_color="black",  # Add a black background color
+                        method="caption",
+                        align="south",
+                        size=screensize,
+                    )
+                    bg_image = ColorClip(color=[0,0,0],size = screensize)
+                    centered_image  = ImageClip(os.path.join("Images","hp2.jpg")).set_position(("center"))
+                    result_clip = CompositeVideoClip([bg_image,centered_image,video_start])
+                    result_clip.save_frame(f"frame.png", t=1)
+                    tts = gTTS(text=sentence, lang="en",tld='com.au', slow=False)
+                    tts.save(f"sentence.mp3")
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame.png -i sentence.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_000.mp4'
+                    subprocess.call(sentence_cmd,shell=True)
                 if len(sentence) != 0:
                     print(f'{i} out of {len(sentences)}')
                     # Convert the sentence into an mp3 file using gTTS
                     tts = gTTS(text=sentence, lang="en",tld='com.au', slow=False)
                     try:
-                        tts.save(f"sentence_{i}.mp3")
+                        tts.save(f"sentence_{format_i}.mp3")
                     except:
                         # #print("try failed")
                         # create 2 seconds of silence
-                        cmd_1 = f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{i}.mp3'
+                        cmd_1 = f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=r=44100:cl=mono -t 2 -q:a 9 -acodec libmp3lame sentence_{format_i}.mp3'
                         subprocess.call(cmd_1,shell=True)
                 
                     # Create a video file with the sentence text
@@ -98,15 +128,17 @@ for filename in os.listdir(folder):
                         align="center",
                         size=screensize,
                     )
-                    video.save_frame(f"frame_{i}.png", t=1)
+                    video.save_frame(f"frame_{format_i}.png", t=1)
                     #print(f"Appending Sentence {i} out of {len(sentences)}")
-                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{i}.png -i sentence_{i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{i}.mp4'
+                    sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{format_i}.png -i sentence_{format_i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{format_i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
-                        os.remove(f"sentence_{i}.mp3")
-                        os.remove(f"frame_{i}.png")
+                        os.remove(f"sentence_{format_i}.mp3")
+                        os.remove(f"frame_{format_i}.png")
                     except:
-                        print(f'error with deletion{i}')
+                        print(f'error with deletion{format_i}')
+                    
+                    
         mp4_files = []
         for filename_1 in os.listdir():
             if "sentence_merge_" in filename_1:
@@ -138,6 +170,18 @@ for filename in os.listdir(folder):
         move(os.path.join(folder, filename),
              os.path.join(donefolder, filename))
         highest_i = -1
+        print(time.time()-starttime)
+
+
+
+## merge chapters into 1
+
+
+
+
+
+
+
 
 
 ##check
