@@ -44,14 +44,68 @@ else:
 
 
 def get_number(filename):
-    return int(re.search(r'\d+', filename).group())
+    return int(re.search(r'\d+', filename.split('_')[-1]).group())
+def extract_filename_parts(filename):
+    # Extract the prefix (everything before "____Chapter")
+    prefix_match = re.search(r'- (.*)____Chapter', filename)
+    if prefix_match:
+        prefix = prefix_match.group(1).strip()
+    else:
+        prefix = ''
 
+    # Extract the chapter number and title
+    chapter_match = re.search(r'Chapter (\d+)_ (.+)\.txt$', filename)
+    if chapter_match:
+        chapter_number = 'Chapter ' + chapter_match.group(1)
+        chapter_title = chapter_match.group(2).strip()
+    else:
+        chapter_number = ''
+        chapter_title = ''
+
+    # Extract the author name (everything before the first "-")
+    author_match = re.search(r'^([^-\s]+)', filename)
+    if author_match:
+        author = author_match.group(1)
+    else:
+        author = ''
+
+    # Return the extracted parts as a tuple
+    return (author, prefix, chapter_number, chapter_title)
 
 sentencecount = 0
 paracount = 0
 
+
+def extract_prefix(filename):
+    return filename.split('____')[0]
+
+def extract_number(filename):
+    match = re.search(r'____Chapter (\d+)', filename)
+    if match:
+        return int(match.group(1))
+    else:
+        return 0
+
+# Group the files by prefix
+files  = os.listdir(folder)
+file_groups = {}
+for filename in files:
+    prefix = extract_prefix(filename)
+    if prefix not in file_groups:
+        file_groups[prefix] = []
+    file_groups[prefix].append(filename)
+
+# Sort the files within each group
+sorted_files = []
+for prefix, group in file_groups.items():
+    sorted_group = sorted(group, key=extract_number)
+    sorted_files.extend(sorted_group)
+
+#print(sorted_files)
+
+
 # Loop through all the text files in the folder
-for filename in os.listdir(folder):
+for filename in sorted_files:
     #print(filename)
     if len(numbers) == 0:
         highest_i = -1
@@ -74,12 +128,16 @@ for filename in os.listdir(folder):
         intermediates = ceil(len(sentences) / 100)
         # Convert each sentence into a text to speech mp3 file and video file
         print(filename)
-        regex = r'^(\w+)\s-\s(.+)_Chapter_(\d+)\.txt$'
-        match = re.match(regex, filename)
-        writer = match.group(1) 
-        story_name = match.group(2)
-        chapter = match.group(3)
-        title_name = f'{story_name} by {writer}. Chapter {chapter}' 
+        author, book, chapter_number, chapter_title = extract_filename_parts(filename)
+        print(f"Author: {author}")
+        print(f"Book: {book}")
+        print(f"Chapter: {chapter_number}")
+        print(f"Title: {chapter_title}")
+        if chapter_number==chapter_title:
+            title_name = f'{book} by {author}. {chapter_number}'
+        else:
+            title_name = f'{book} by {author}. {chapter_number} {chapter_title}'
+        title_name
         for i, sentence in enumerate(sentences, 1):
             #print(f"Generating {i} out of {len(sentences)}")
             #print(sentence)
@@ -101,7 +159,7 @@ for filename in os.listdir(folder):
                     centered_image  = ImageClip(os.path.join("Images","hp2.jpg")).set_position(("center"))
                     result_clip = CompositeVideoClip([bg_image,centered_image,video_start])
                     result_clip.save_frame(f"frame.png", t=1)
-                    tts = gTTS(text=sentence, lang="en",tld='com.au', slow=False)
+                    tts = gTTS(text=title_name, lang="en",tld='com.au', slow=False)
                     tts.save(f"sentence.mp3")
                     sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame.png -i sentence.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_000.mp4'
                     subprocess.call(sentence_cmd,shell=True)
