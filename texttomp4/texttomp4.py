@@ -1,5 +1,6 @@
 import re
 import os
+import random
 import time
 from shutil import move
 from math import ceil
@@ -178,17 +179,20 @@ for filename in sorted_files:
                         subprocess.call(cmd_1,shell=True)
                     # Create a video file with the sentence text
                     video = TextClip(
-                        sentence,
+                        "sentence",
                         font="Arial",
                         fontsize=48,
                         color="white",
                         bg_color="black",  # Add a black background color
                         method="caption",
-                        align="center",
+                        align="south",
                         size=screensize,
                     )
-                    video.save_frame(f"frame_{format_i}.png", t=1)
-                    #print(f"Appending Sentence {i} out of {len(sentences)}")
+                    bg_image = ColorClip(color=[0,0,0],size = screensize)
+                    random_file = random.choice(os.listdir(os.path.join(os.getcwd(),"Images")))
+                    centered_image = ImageClip(os.path.join("Images",random_file)).set_position(("center"))
+                    result_clip = CompositeVideoClip([bg_image,centered_image,video])
+                    result_clip.save_frame(f"frame_{format_i}.png", t=1)
                     sentence_cmd = f'ffmpeg -y -hide_banner -loglevel error -loop 1 -i frame_{format_i}.png -i sentence_{format_i}.mp3 -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest sentence_merge_{format_i}.mp4'
                     subprocess.call(sentence_cmd,shell=True)
                     try:
