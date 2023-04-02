@@ -41,7 +41,6 @@ else:
 
 # debug
 # filename = os.listdir(folder)[0]
-# filename = sorted_files[0]
 
 
 def get_number(filename):
@@ -196,7 +195,6 @@ for filename in sorted_files:
                         os.remove(f"frame_{format_i}.png")
                     except:
                         print(f'error with deletion{format_i}')
-            print(f'Currently elapsed time: {time.time()-starttime}')
         mp4_files = []
         for filename_1 in os.listdir():
             if "sentence_merge_" in filename_1:
@@ -242,33 +240,33 @@ for filename in sorted_files:
 
 
 
-# ##check
+##check
 
-# import time
-# import subprocess
-# import os
-# import re
-# os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\texttomp4")
+import time
+import subprocess
+import os
+import re
+os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\texttomp4")
 
-# def get_number(filename):
-#     return int(re.search(r'\d+', filename).group())
-# mp4_files = []
-# for filename_1 in os.listdir():
-#     if "sentence_merge_" in filename_1:
-#         if filename_1.endswith(".mp4"):
-#             mp4_files.append(filename_1)          
-# mp4_files_sorted = sorted_list = sorted(mp4_files, key=get_number)
-# with open('list.txt', 'w') as f:
-#     for file in mp4_files_sorted:
-#         f.write(f"file '{file}'\n")
+def get_number(filename):
+    return int(re.search(r'\d+', filename).group())
+mp4_files = []
+for filename_1 in os.listdir():
+    if "sentence_merge_" in filename_1:
+        if filename_1.endswith(".mp4"):
+            mp4_files.append(filename_1)          
+mp4_files_sorted = sorted_list = sorted(mp4_files, key=get_number)
+with open('list.txt', 'w') as f:
+    for file in mp4_files_sorted:
+        f.write(f"file '{file}'\n")
 
-# command2 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc output2.mp4'
-# command1 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 output1.mp4'
-# starttime = time.time()
-# subprocess.call(command1, shell=True)
-# endtime = time.time()
-# subprocess.call(command2, shell=True)
-# endtime2 = time.time()
+command2 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 -c:v h264_nvenc output2.mp4'
+command1 = f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i list.txt -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 output1.mp4'
+starttime = time.time()
+subprocess.call(command1, shell=True)
+endtime = time.time()
+subprocess.call(command2, shell=True)
+endtime2 = time.time()
 
-# endtime2-endtime
-# endtime-starttime
+endtime2-endtime
+endtime-starttime
