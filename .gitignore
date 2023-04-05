@@ -154,5 +154,5 @@ cython_debug/
 *.txt
 *.mp3
 *.mp4
-*.jpg
+*jpg
 *.png
