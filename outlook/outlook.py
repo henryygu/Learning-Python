@@ -8,7 +8,7 @@ inbox = outlook.GetDefaultFolder(6)  # "6" refers to the index of the inbox fold
 emails = inbox.Items
 
 # Restrict to emails with subject line containing "Screen"
-restricted_emails = emails.Restrict("@SQL=urn:schemas:httpmail:subject LIKE '%SEDIT%'")
+restricted_emails = emails.Restrict("@SQL=urn:schemas:httpmail:subject LIKE '%test%'")
 
 # Create a DataFrame of email properties
 
