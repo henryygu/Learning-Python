@@ -1,7 +1,7 @@
 import win32com.client
 import pandas as pd
 
-outlook = win32com.client.Dispatch('Outlook.Application').GetNamespace('MAPI')
+outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 inbox = outlook.GetDefaultFolder(6)  # "6" refers to the index of the inbox folder
 
 # Get all emails in the inbox

@@ -1,8 +1,9 @@
 import os
 import time
 import random
-#import cv2
-#import numpy as np
+
+# import cv2
+# import numpy as np
 import pyautogui as pg
 
 
@@ -10,7 +11,7 @@ os.chdir("D:\\Users\\Henry\\Downloads\\github\\Learning-Python\\Automation")
 
 
 # list of image filenames to search for
-#image_filenames = ["target.png", "target2.png", "target3.png"]
+# image_filenames = ["target.png", "target2.png", "target3.png"]
 TARGET_FILENAMES = ["target1.png"]
 HARVEST_FILENAMES = ["Harvestall1.png"]
 PLANT_FILENAMES = ["plantall.png"]
@@ -52,20 +53,21 @@ def search_for_targets():
             print(f"Found {target_filename} at {target_location}")
             harvest_loc = pg.locateOnScreen(HARVEST_FILENAMES[0], confidence=0.9)
             harvest_loc_centre = pg.center(harvest_loc)
-            pg.click(harvest_loc_centre[0],harvest_loc_centre[1]-50)
-            pg.moveTo(x,y)
+            pg.click(harvest_loc_centre[0], harvest_loc_centre[1] - 50)
+            pg.moveTo(x, y)
             time.sleep(random.uniform(5, 10))
             plant_location = find_targets(PLANT_FILENAMES)
             click_targets(plant_location)
-            pg.moveTo(x,y)
+            pg.moveTo(x, y)
         else:
             print(f"Did not find {target_filename}")
 
+
 count = 0
-#while True:
+# while True:
 while count < 30:
     print(count)
     search_for_targets()
     wait_time = random.uniform(10, 40)
     print(wait_time)
-    #time.sleep(wait_time)
+    # time.sleep(wait_time)
